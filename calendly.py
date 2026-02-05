@@ -4,15 +4,12 @@ from datetime import date, timedelta
 # ==========================================
 # ⚙️ CONFIGURATION (COLLE TES LIENS ICI)
 # ==========================================
-# Remplace les liens ci-dessous par les tiens (garde les guillemets "")
 LIEN_CALENDLY_REMPLISSAGE = "https://calendly.com/yb2005441000/remplissage-" 
 LIEN_CALENDLY_POSE_COMPLETE = "https://calendly.com/yb2005441000/pose-complete-"
 
-# Nom de ton Agence (Pour la pub en bas)
 MON_NOM_AGENCE = "YB" 
 MON_INSTA = "yac.b4"
 
-# Tarifs de la cliente (Exemple)
 TARIFS = {
     "Cil à Cil": {"Pose": 55, "Remplissage": 40},
     "Mixte": {"Pose": 55, "Remplissage": 45},
@@ -23,25 +20,89 @@ TARIFS = {
 REGLES = {
     "Acompte": 10,
     "Retard_Max": 10,
-    "Delai_Max_Remplissage": 21 # 3 semaines (21 jours)
+    "Delai_Max_Remplissage": 21 
 }
 
 # ==========================================
-# 📱 L'INTERFACE DU SITE
+# 📱 L'INTERFACE DU SITE & DESIGN LUXE
 # ==========================================
-st.set_page_config(page_title="Réservation Lash Studio", page_icon="👁️")
+st.set_page_config(page_title="Réservation Lash Studio", page_icon="👁️", layout="centered")
+
+# --- BLOC DE DESIGN PERSONNALISÉ ---
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@300;400;600&display=swap');
+
+/* 1. Fond et Police Globale */
+.stApp {
+    background-color: #FDF8F5 !important; /* Couleur Nude / Beige clair */
+}
+
+/* 2. Style des Titres */
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif !important;
+    color: #8E735B !important; /* Marron doré / Taupe */
+    text-align: center;
+}
+
+/* 3. Style du texte et des étiquettes */
+.stMarkdown, p, label, .stRadio label, .stSelectbox label {
+    font-family: 'Montserrat', sans-serif !important;
+    color: #5D4D42 !important;
+}
+
+/* 4. Personnalisation des Widgets (Selectbox, Radio, Date) */
+div[data-baseweb="select"], div[data-baseweb="radio"], div[data-baseweb="input"] {
+    background-color: white !important;
+    border-radius: 10px !important;
+}
+
+/* 5. Style des Cartes de Métriques (Prix & Acompte) */
+div[data-testid="stMetric"] {
+    background-color: white !important;
+    padding: 15px !important;
+    border-radius: 15px !important;
+    border: 1px solid #F1E4DC !important;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.02) !important;
+    text-align: center;
+}
+
+/* 6. Le Bouton de Réservation (Style Or) */
+button[kind="primary"], .stButton > button {
+    background-color: #D4AF37 !important; /* Or */
+    color: white !important;
+    border-radius: 50px !important;
+    border: none !important;
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    transition: all 0.3s ease !important;
+}
+
+.stButton > button:hover {
+    background-color: #B8860B !important; /* Or foncé */
+    transform: scale(1.02);
+}
+
+/* 7. Footer */
+.footer-text {
+    font-family: 'Montserrat', sans-serif;
+    color: #A08E81;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # En-tête
-st.markdown("<h1 style='text-align: center; color: #D63384;'>✨ Lash Studio - Réservation ✨</h1>", unsafe_allow_html=True)
-st.write("Bienvenue sur l'assistant intelligent. Répondez aux questions pour obtenir le tarif exact et accéder à l'agenda.")
+st.markdown("<h1>✨ Lash Studio ✨</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Réservez votre prestation d'exception en quelques clics.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # 1. LE CHOIX
-st.subheader("1️⃣ Quelle prestation souhaitez-vous ?")
+st.subheader("Quelle prestation souhaitez-vous ?")
 choix = st.selectbox("Type de pose", list(TARIFS.keys()))
 
 # 2. LE DIAGNOSTIC INTELLIGENT
-st.subheader("2️⃣ Diagnostic : Pose ou Remplissage ?")
+st.subheader("Diagnostic de vos cils")
 etat = st.radio("Votre situation actuelle :", ["Nouvelle cliente / Plus rien", "Déjà cliente (J'ai encore des cils)"])
 
 prix = 0
@@ -50,31 +111,22 @@ lien_final = ""
 duree_txt = ""
 
 if "Nouvelle" in etat:
-    # Cas simple : Pose complète
     prix = TARIFS[choix]["Pose"]
     lien_final = LIEN_CALENDLY_POSE_COMPLETE
     duree_txt = "2h30"
     st.info("💎 Tarif Nouvelle Pose appliqué.")
-
 else:
-    # Cas complexe : Remplissage -> On sort la calculatrice
     st.write("📆 **Date de votre dernier rendez-vous :**")
     date_last = st.date_input("Sélectionnez la date", value=date.today() - timedelta(days=14))
-    
     jours_passes = (date.today() - date_last).days
-    st.caption(f"Cela fait exactement {jours_passes} jours.")
     
     if jours_passes > REGLES["Delai_Max_Remplissage"]:
-        # LE PIÈGE : DÉLAI DÉPASSÉ
         st.error(f"⛔ **DÉLAI DÉPASSÉ (> {REGLES['Delai_Max_Remplissage']} jours).**")
-        st.write("Comme expliqué dans les conditions, le tarif 'Pose Complète' s'applique automatiquement car il y a trop de travail.")
-        
         prix = TARIFS[choix]["Pose"]
         lien_final = LIEN_CALENDLY_POSE_COMPLETE
         duree_txt = "2h30"
         est_hors_delai = True
     else:
-        # C'EST VALIDÉ
         st.success("✅ Délai validé pour un Remplissage.")
         prix = TARIFS[choix]["Remplissage"]
         lien_final = LIEN_CALENDLY_REMPLISSAGE
@@ -83,56 +135,43 @@ else:
 st.markdown("---")
 
 # 3. LE PAIEMENT & CONDITIONS
-st.subheader("3️⃣ Validation & Accès Agenda")
+st.subheader("Validation & Agenda")
 
 col1, col2 = st.columns(2)
 with col1:
-    st.metric("PRIX À PAYER", f"{prix} €")
-    if est_hors_delai:
-        st.caption("⚠️ Tarif ajusté auto")
+    st.metric("PRIX TOTAL", f"{prix} €")
 with col2:
     st.metric("ACOMPTE", f"{REGLES['Acompte']} €")
-    st.caption("À régler après réservation")
 
-st.write("##### ✅ Je m'engage :")
-c1 = st.checkbox(f"Tout retard > {REGLES['Retard_Max']} min annule mon RDV.")
-c2 = st.checkbox("Je viendrai les yeux démaquillés.")
-c3 = st.checkbox(f"Je règle l'acompte de {REGLES['Acompte']}€ immédiatement après avoir choisi l'heure.")
+st.write("##### ✅ Engagement :")
+c1 = st.checkbox(f"Retard > {REGLES['Retard_Max']} min = RDV annulé.")
+c2 = st.checkbox("Yeux parfaitement démaquillés.")
+c3 = st.checkbox(f"Règlement de l'acompte de {REGLES['Acompte']}€ après réservation.")
 
 if c1 and c2 and c3:
-    st.success("✨ Dossier validé ! L'agenda est débloqué ci-dessous.")
-    
-    # Couleur du bouton selon le cas
-    couleur_btn = "#E1306C" if est_hors_delai else "#0069FF"
+    st.success("✨ Agenda débloqué !")
+    couleur_btn = "#D4AF37" # Toujours Or pour le style luxe
     msg_btn = f"📅 RÉSERVER MON CRÉNEAU ({duree_txt})"
     
-    if est_hors_delai:
-        st.warning(f"⚠️ Redirection vers le créneau long ({duree_txt}) car le délai remplissage est dépassé.")
-
-    # BOUTON MAGIQUE
     st.markdown(f"""
     <a href="{lien_final}" target="_blank" style="text-decoration:none;">
-        <button style='background-color:{couleur_btn}; color:white; border:none; padding:15px 32px; font-size:18px; border-radius:10px; cursor:pointer; width:100%; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);'>
+        <button style='background-color:{couleur_btn}; color:white; border:none; padding:15px 32px; font-size:18px; border-radius:50px; cursor:pointer; width:100%; font-weight:bold; font-family:Montserrat; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>
            {msg_btn}
         </button>
     </a>
     """, unsafe_allow_html=True)
-    
-    st.caption("Cela ouvrira l'agenda des disponibilités en temps réel.")
-
 else:
-    st.info("Veuillez cocher les 3 cases pour voir les disponibilités.")
+    st.info("Veuillez cocher les 3 cases pour accéder aux disponibilités.")
 
 # ==========================================
-# 📢 TA PUB (GROWTH HACKING)
+# 📢 TA PUB
 # ==========================================
 st.markdown("<br><br><br>", unsafe_allow_html=True)
-st.markdown("---")
 st.markdown(f"""
-    <div style='text-align: center; color: grey; font-size: 12px; font-family: sans-serif;'>
+    <div style='text-align: center; color: #A08E81; font-size: 13px; font-family: Montserrat;'>
+        <hr style='border: 0.5px solid #F1E4DC;'>
         Outil de gestion intelligent créé par <b>{MON_NOM_AGENCE}</b><br>
-        Tu es prestataire beauté ? Automatise tes RDV toi aussi.<br>
-        <a href="https://instagram.com/{MON_INSTA}" target="_blank" style="text-decoration: none; color: #E1306C; font-weight: bold;">
+        <a href="https://instagram.com/{MON_INSTA}" target="_blank" style="text-decoration: none; color: #D4AF37; font-weight: bold;">
         👉 Commande ton assistant ici
         </a>
     </div>
