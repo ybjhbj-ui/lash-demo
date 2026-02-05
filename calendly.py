@@ -14,7 +14,7 @@ MON_INSTA = "yac.b4"
 
 # Tarifs de la cliente (Exemple)
 TARIFS = {
-    "Cil à Cil": {"Pose": 50, "Remplissage": 40},
+    "Cil à Cil": {"Pose": 55, "Remplissage": 40},
     "Mixte": {"Pose": 55, "Remplissage": 45},
     "Volume Russe": {"Pose": 60, "Remplissage": 50},
     "Mega Volume": {"Pose": 65, "Remplissage": 55}
