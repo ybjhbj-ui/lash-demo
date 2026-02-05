@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import date, timedelta
 
 # ==========================================
-# ⚙️ CONFIGURATION (COLLE TES LIENS ICI)
+# ⚙️ CONFIGURATION (LIENS CALENDLY)
 # ==========================================
 LIEN_CALENDLY_REMPLISSAGE = "https://calendly.com/yb2005441000/remplissage-" 
 LIEN_CALENDLY_POSE_COMPLETE = "https://calendly.com/yb2005441000/pose-complete-"
@@ -24,40 +24,45 @@ REGLES = {
 }
 
 # ==========================================
-# 📱 L'INTERFACE DU SITE & DESIGN LUXE
+# 📱 INTERFACE & DESIGN SUR MESURE
 # ==========================================
 st.set_page_config(page_title="Réservation Lash Studio", page_icon="👁️", layout="centered")
 
-# --- BLOC DE DESIGN PERSONNALISÉ ---
+# --- BLOC DE DESIGN LUXE + DISCRETION GITHUB ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@300;400;600&display=swap');
 
-/* 1. Fond et Police Globale */
+/* CACHER LE MENU ET LE LOGO GITHUB/STREAMLIT */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* FOND ET POLICE GLOBALE */
 .stApp {
-    background-color: #FDF8F5 !important; /* Couleur Nude / Beige clair */
+    background-color: #FDF8F5 !important;
 }
 
-/* 2. Style des Titres */
+/* STYLE DES TITRES */
 h1, h2, h3 {
     font-family: 'Playfair Display', serif !important;
-    color: #8E735B !important; /* Marron doré / Taupe */
+    color: #8E735B !important;
     text-align: center;
 }
 
-/* 3. Style du texte et des étiquettes */
+/* STYLE DU TEXTE */
 .stMarkdown, p, label, .stRadio label, .stSelectbox label {
     font-family: 'Montserrat', sans-serif !important;
     color: #5D4D42 !important;
 }
 
-/* 4. Personnalisation des Widgets (Selectbox, Radio, Date) */
+/* WIDGETS (SELECTBOX, RADIO) */
 div[data-baseweb="select"], div[data-baseweb="radio"], div[data-baseweb="input"] {
     background-color: white !important;
     border-radius: 10px !important;
 }
 
-/* 5. Style des Cartes de Métriques (Prix & Acompte) */
+/* CARTES DE PRIX (MÉTRIQUES) */
 div[data-testid="stMetric"] {
     background-color: white !important;
     padding: 15px !important;
@@ -67,9 +72,9 @@ div[data-testid="stMetric"] {
     text-align: center;
 }
 
-/* 6. Le Bouton de Réservation (Style Or) */
+/* BOUTON DE RÉSERVATION (STYLE OR) */
 button[kind="primary"], .stButton > button {
-    background-color: #D4AF37 !important; /* Or */
+    background-color: #D4AF37 !important;
     color: white !important;
     border-radius: 50px !important;
     border: none !important;
@@ -77,22 +82,17 @@ button[kind="primary"], .stButton > button {
     font-weight: 600 !important;
     letter-spacing: 1px !important;
     transition: all 0.3s ease !important;
+    width: 100% !important;
 }
 
 .stButton > button:hover {
-    background-color: #B8860B !important; /* Or foncé */
+    background-color: #B8860B !important;
     transform: scale(1.02);
-}
-
-/* 7. Footer */
-.footer-text {
-    font-family: 'Montserrat', sans-serif;
-    color: #A08E81;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# En-tête
+# --- CONTENU DU SITE ---
 st.markdown("<h1>✨ Lash Studio ✨</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>Réservez votre prestation d'exception en quelques clics.</p>", unsafe_allow_html=True)
 st.markdown("---")
@@ -101,7 +101,7 @@ st.markdown("---")
 st.subheader("Quelle prestation souhaitez-vous ?")
 choix = st.selectbox("Type de pose", list(TARIFS.keys()))
 
-# 2. LE DIAGNOSTIC INTELLIGENT
+# 2. DIAGNOSTIC
 st.subheader("Diagnostic de vos cils")
 etat = st.radio("Votre situation actuelle :", ["Nouvelle cliente / Plus rien", "Déjà cliente (J'ai encore des cils)"])
 
@@ -134,7 +134,7 @@ else:
 
 st.markdown("---")
 
-# 3. LE PAIEMENT & CONDITIONS
+# 3. PAIEMENT & CONDITIONS
 st.subheader("Validation & Agenda")
 
 col1, col2 = st.columns(2)
@@ -150,12 +150,11 @@ c3 = st.checkbox(f"Règlement de l'acompte de {REGLES['Acompte']}€ après rés
 
 if c1 and c2 and c3:
     st.success("✨ Agenda débloqué !")
-    couleur_btn = "#D4AF37" # Toujours Or pour le style luxe
     msg_btn = f"📅 RÉSERVER MON CRÉNEAU ({duree_txt})"
     
     st.markdown(f"""
     <a href="{lien_final}" target="_blank" style="text-decoration:none;">
-        <button style='background-color:{couleur_btn}; color:white; border:none; padding:15px 32px; font-size:18px; border-radius:50px; cursor:pointer; width:100%; font-weight:bold; font-family:Montserrat; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>
+        <button style='background-color:#D4AF37; color:white; border:none; padding:15px 32px; font-size:18px; border-radius:50px; cursor:pointer; width:100%; font-weight:bold; font-family:Montserrat; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>
            {msg_btn}
         </button>
     </a>
@@ -163,9 +162,7 @@ if c1 and c2 and c3:
 else:
     st.info("Veuillez cocher les 3 cases pour accéder aux disponibilités.")
 
-# ==========================================
-# 📢 TA PUB
-# ==========================================
+# --- FOOTER ---
 st.markdown("<br><br><br>", unsafe_allow_html=True)
 st.markdown(f"""
     <div style='text-align: center; color: #A08E81; font-size: 13px; font-family: Montserrat;'>
@@ -176,3 +173,4 @@ st.markdown(f"""
         </a>
     </div>
     """, unsafe_allow_html=True)
+
