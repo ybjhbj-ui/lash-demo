@@ -756,14 +756,10 @@ def formulaire_commande(panier, total_articles):
             value=min_date + timedelta(days=2)
         )
         
-        # CORRECTION : Initialiser les variables d'adresse AVANT le if
-        rue = ""
-        ville = ""
-        code_postal = ""
-        complement = ""
-        pays = ""
+        # CORRECTION : Afficher les champs d'adresse DYNAMIQUEMENT comme pour les options
+        # Les champs apparaissent immédiatement quand le mode change
         
-        # Adresse si livraison - CORRECTION : Toujours afficher les champs si pas retrait
+        # Adresse si livraison - AFFICHAGE DYNAMIQUE
         if mode_livraison != "📍 Retrait Gonesse":
             st.subheader("📍 Adresse de livraison")
             adresse_col1, adresse_col2 = st.columns(2)
@@ -776,7 +772,7 @@ def formulaire_commande(panier, total_articles):
                 code_postal = st.text_input("Code postal*", placeholder="75008", key="cp_input")
                 complement = st.text_input("Complément d'adresse", placeholder="Bâtiment, étage, digicode...", key="complement_input")
             
-            # CORRECTION : Champ pays seulement pour "Hors France"
+            # Champ pays seulement pour "Hors France"
             if "Hors France" in mode_livraison:
                 pays = st.text_input("Pays de destination*", placeholder="Belgique, Suisse, Canada...", key="pays_input")
         
@@ -838,7 +834,7 @@ def formulaire_commande(panier, total_articles):
         )
     
     if submitted:
-        # CORRECTION : Validation améliorée pour l'adresse
+        # CORRECTION : Gestion des variables d'adresse selon le mode
         validation_ok = True
         erreurs = []
         
@@ -852,14 +848,24 @@ def formulaire_commande(panier, total_articles):
         
         # Validation adresse si livraison
         if mode_livraison != "📍 Retrait Gonesse":
+            # Récupérer les valeurs des champs (ils existent car affichés)
+            rue = st.session_state.get("rue_input", "")
+            ville = st.session_state.get("ville_input", "")
+            code_postal = st.session_state.get("cp_input", "")
+            complement = st.session_state.get("complement_input", "")
+            
             if not rue:
                 erreurs.append("Adresse complète")
             if not ville:
                 erreurs.append("Ville")
             if not code_postal:
                 erreurs.append("Code postal")
-            if "Hors France" in mode_livraison and not pays:
-                erreurs.append("Pays de destination")
+            
+            # Pour Hors France, vérifier le pays
+            if "Hors France" in mode_livraison:
+                pays = st.session_state.get("pays_input", "")
+                if not pays:
+                    erreurs.append("Pays de destination")
         
         if not cgu:
             erreurs.append("Acceptation des CGV")
@@ -874,15 +880,25 @@ def formulaire_commande(panier, total_articles):
             for article in panier
         ])
         
-        # CORRECTION : Construction de l'adresse finale
+        # Construction de l'adresse finale
         if mode_livraison == "📍 Retrait Gonesse":
             adresse_finale = "Retrait sur place (12 Rue des Fleurs, 95500 Gonesse)"
         else:
+            # Récupérer les valeurs pour la construction
+            rue = st.session_state.get("rue_input", "")
+            ville = st.session_state.get("ville_input", "")
+            code_postal = st.session_state.get("cp_input", "")
+            complement = st.session_state.get("complement_input", "")
+            
             adresse_finale = f"{rue}, {code_postal} {ville}"
             if complement:
                 adresse_finale += f" ({complement})"
-            if "Hors France" in mode_livraison and pays:
-                adresse_finale += f", {pays}"
+            
+            # Ajouter le pays si Hors France
+            if "Hors France" in mode_livraison:
+                pays = st.session_state.get("pays_input", "")
+                if pays:
+                    adresse_finale += f", {pays}"
         
         message_commande = f"""
 COMMANDE SUN CREATION
