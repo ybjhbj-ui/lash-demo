@@ -1092,5 +1092,4 @@ with tab_inspiration:
 
 st.markdown("---")
 st.markdown(f"<p style='text-align:center; color:#888; font-size:0.9rem;'>© 2026 Sun Creation {THEME['icon']} | Fait avec ❤️</p>", unsafe_allow_html=True)
-```
 
