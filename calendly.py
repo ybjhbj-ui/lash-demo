@@ -102,24 +102,12 @@ ACCESSOIRES_BOUQUET = {"🎗️ Bande (+15€)": 15, "💌 Carte (+5€)": 5, "�
 ACCESSOIRES_BOX_CHOCO = {"🅰️ Initiale (+5€)": 5, "🧸 Doudou (+3.50€)": 3.5, "🎗️ Bande (+10€)": 10, "🎂 Topper (+2€)": 2, "🐻 2 doudou (+7.5€)": 7.5}
 LIVRAISON_OPTIONS = {"📍 Retrait Gonesse": 0, "📦 Colis IDF - 12€": 12, "📦 Colis France - 12€": 12, "🌍 Hors France - 15€": 15, "🚗 Uber (À CHARGE)": 0}
 
-# Liste complète des emballages d'après les photos
-EMBALLAGES_LISTE = [
-    # Classiques
-    "Noir", "Blanc", "Rose", "Bordeaux", "Rouge", "Brun Glacé", "Jaune Crème", "Marron", 
-    "Vert", "Orange", "Aubergine", "Violet", "Bleu Ciel", "Bleu", "Café",
-    # Avec Bordures
-    "Noir Bordure Noire", "Noir Bordure Dorée", "Noir Bordure Blanche",
-    "Blanc Bordure Blanche", "Blanc Bordure Noire", "Blanc Bordure Dorée",
-    "Rose Bordure Rose", "Rose Bordure Dorée",
-    "Bordeaux Bordure Dorée", "Argenté Bordure Argenté", "Rouge Bordure Rouge", "Bleu Bordure Bleue",
-    "Doré Bordure Dorée", "Noir/Doré", "Rouge/Noir", "Rose/Doré", "Marbre Noir/Blanc",
-    # Luxe (+5€)
-    "Dior Noir (+5€)", "Dior Bordeaux (+5€)", "Dior Beige (+5€)", "Dior Rose (+5€)", 
-    "Dior Rose Fushia (+5€)", "Dior Bleu (+5€)", "Dior Vert Menthe (+5€)", "Dior Violet (+5€)",
-    "Chanel Noir/Doré (+5€)", 
-    "LV Noir/Doré (+5€)", "LV Rose/Blanc (+5€)", 
-    "LV Hello Kitty Rose/Blanc (+5€)", "LV Hello Kitty Blanc/Noir (+5€)", "LV Hello Kitty Blanc/Rouge (+5€)"
-]
+# --- NOUVELLE ORGANISATION DES EMBALLAGES ---
+EMBALLAGES_CLASSIQUE = ["Noir", "Blanc", "Rose", "Bordeaux", "Rouge", "Brun Glacé", "Jaune Crème", "Marron", "Vert", "Orange", "Aubergine", "Violet", "Bleu Ciel", "Bleu", "Café"]
+EMBALLAGES_BORDURE = ["Noir Bordure Noire", "Noir Bordure Dorée", "Noir Bordure Blanche", "Blanc Bordure Blanche", "Blanc Bordure Noire", "Blanc Bordure Dorée", "Rose Bordure Rose", "Rose Bordure Dorée", "Bordeaux Bordure Dorée", "Argenté Bordure Argenté", "Rouge Bordure Rouge", "Bleu Bordure Bleue", "Doré Bordure Dorée", "Noir/Doré", "Rouge/Noir", "Rose/Doré", "Marbre Noir/Blanc"]
+# J'ai retiré le (+5€) des noms ici car c'est géré par la catégorie maintenant
+EMBALLAGES_LUXE = ["Dior Noir", "Dior Bordeaux", "Dior Beige", "Dior Rose", "Dior Rose Fushia", "Dior Bleu", "Dior Vert Menthe", "Dior Violet", "Chanel Noir/Doré", "LV Noir/Doré", "LV Rose/Blanc", "LV Hello Kitty Rose/Blanc", "LV Hello Kitty Blanc/Noir", "LV Hello Kitty Blanc/Rouge"]
+
 
 # --- HEADER ---
 st.markdown('<p class="main-title">Sun Creation</p>', unsafe_allow_html=True)
@@ -138,7 +126,7 @@ choix = st.selectbox("Je veux ajouter :", ["🌹 Un Bouquet", "🍫 Box Chocolat
 
 st.markdown("---")
 
-# --- CHOIX 1 : BOUQUET ---
+# --- CHOIX 1 : BOUQUET (MODIFIÉ) ---
 if choix == "🌹 Un Bouquet":
     st.header("🌹 Configurer Bouquet")
     taille = st.select_slider("Nombre de roses", options=list(PRIX_ROSES.keys()), format_func=lambda x: f"{x} Roses ({PRIX_ROSES[x]}€)")
@@ -149,11 +137,38 @@ if choix == "🌹 Un Bouquet":
     
     couleur_rose = st.selectbox("Couleur des roses", COULEURS_ROSES)
     
-    # NOUVELLE LISTE D'EMBALLAGES
-    choix_emballage = st.selectbox("Style d'emballage", EMBALLAGES_LISTE)
+    st.markdown("---")
+    st.subheader("🎀 Choix de l'emballage")
     
-    prix_papier = 5 if "(+5€)" in str(choix_emballage) else 0
+    # 1. Choix de la catégorie
+    categorie_emballage = st.radio("Type d'emballage :", ["Classique (Normal)", "Avec Bordures/Spécial", "Luxe (+5€)"])
     
+    prix_papier = 0
+    liste_finale_emballages = []
+    image_emballage_cat = ""
+
+    # 2. Logique selon la catégorie
+    if categorie_emballage == "Classique (Normal)":
+        image_emballage_cat = "embal_classique.jpg"
+        liste_finale_emballages = EMBALLAGES_CLASSIQUE
+        prix_papier = 0
+    elif categorie_emballage == "Avec Bordures/Spécial":
+        image_emballage_cat = "embal_bordure.jpg"
+        liste_finale_emballages = EMBALLAGES_BORDURE
+        prix_papier = 0
+    else: # Luxe
+        image_emballage_cat = "embal_luxe.jpg"
+        liste_finale_emballages = EMBALLAGES_LUXE
+        prix_papier = 5
+        
+    # Affichage de l'image de catégorie
+    try: st.image(image_emballage_cat, use_container_width=True)
+    except: st.caption(f"📷 (Image {categorie_emballage})")
+
+    # 3. Choix de la couleur exacte
+    choix_emballage = st.selectbox("Couleur exacte de l'emballage", liste_finale_emballages)
+    
+    st.markdown("---")
     st.write("**Ajouter des options :**")
     options_choisies = []
     details_sup_list = []
@@ -174,9 +189,11 @@ if choix == "🌹 Un Bouquet":
     if st.button(f"➕ AJOUTER AU PANIER ({prix_article}€)", type="primary", use_container_width=True):
         info_options = ", ".join(options_choisies)
         if details_sup_list: info_options += " | " + " | ".join(details_sup_list)
+        # On ajoute le type au nom de l'emballage pour le récap
+        nom_emballage_complet = f"{categorie_emballage} - {choix_emballage}"
         st.session_state.panier.append({
             "titre": f"BOUQUET {taille} roses",
-            "desc": f"Couleur: {couleur_rose} | Emballage: {choix_emballage}\nOptions: {info_options}",
+            "desc": f"Couleur: {couleur_rose} | Emballage: {nom_emballage_complet}\nOptions: {info_options}",
             "prix": prix_article
         })
         st.success("✅ Bouquet ajouté au panier !")
@@ -215,13 +232,12 @@ elif choix == "🍫 Box Chocolat":
         })
         st.success("✅ Box ajoutée au panier !")
 
-# --- CHOIX 3 : BOX LOVE (MODIFIÉ) ---
+# --- CHOIX 3 : BOX LOVE ---
 else:
     st.header("❤️ Configurer Box Love")
     try: st.image("box_love.jpg", use_container_width=True)
     except: pass
     
-    # NOUVELLE LOGIQUE : SOIT FLEURS, SOIT CHOCOLATS
     type_remplissage = st.radio("Je veux remplir la box avec :", ["Fleurs (Roses)", "Chocolats"])
     
     desc_contenu = ""
