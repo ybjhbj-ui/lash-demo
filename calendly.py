@@ -6,7 +6,7 @@ from datetime import date, timedelta
 # ==========================================
 # Remplace les liens ci-dessous par les tiens (garde les guillemets "")
 LIEN_CALENDLY_REMPLISSAGE = "https://calendly.com/yb2005441000/remplissage-" 
-LIEN_CALENDLY_POSE_COMPLETE = "https://calendly.com/yb2005441000/pose-complete-"
+LIEN_CALENDLY_POSE_COMPLETE = "https://zcal.co/i/hIsOGhsC"
 
 # Nom de ton Agence (Pour la pub en bas)
 MON_NOM_AGENCE = "YB" 
